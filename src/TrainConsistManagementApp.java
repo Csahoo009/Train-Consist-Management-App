@@ -1,64 +1,40 @@
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Stack;
-
-class RoomInventory {
-    private Map<String, Integer> inventory = new HashMap<>();
-
-    public RoomInventory() {
-        inventory.put("Single", 5);
-    }
-
-    public void restoreInventory(String roomType) {
-        inventory.put(roomType, inventory.get(roomType) + 1);
-    }
-
-    public int getAvailability(String roomType) {
-        return inventory.getOrDefault(roomType, 0);
-    }
-}
+import java.util.ArrayList;
+import java.util.List;
 
 public class TrainConsistManagementApp {
-    private Stack<String> releasedRoomIds;
-    private Map<String, String> reservationRoomTypeMap;
 
-    public TrainConsistManagementApp() {
-        releasedRoomIds = new Stack<>();
-        reservationRoomTypeMap = new HashMap<>();
-    }
+    static class Bogie {
+        String name;
+        int capacity;
 
-    public void registerBooking(String reservationId, String roomType) {
-        reservationRoomTypeMap.put(reservationId, roomType);
-    }
-
-    public void cancelBooking(String reservationId, RoomInventory inventory) {
-        if (reservationRoomTypeMap.containsKey(reservationId)) {
-            String roomType = reservationRoomTypeMap.get(reservationId);
-            inventory.restoreInventory(roomType);
-            releasedRoomIds.push(reservationId);
-            reservationRoomTypeMap.remove(reservationId);
-
-            System.out.println("Booking Cancellation");
-            System.out.println("Booking cancelled successfully. Inventory restored for room type: " + roomType);
-        }
-    }
-
-    public void showRollbackHistory() {
-        System.out.println("\nRollback History (Most Recent First):");
-        for (int i = releasedRoomIds.size() - 1; i >= 0; i--) {
-            System.out.println("Released Reservation ID: " + releasedRoomIds.get(i));
+        Bogie(String name, int capacity) {
+            this.name = name;
+            this.capacity = capacity;
         }
     }
 
     public static void main(String[] args) {
-        RoomInventory hotelInventory = new RoomInventory();
-        TrainConsistManagementApp service = new TrainConsistManagementApp();
+        System.out.println("==========================================");
+        System.out.println(" UC10 - Count Total Seats in Train ");
+        System.out.println("==========================================\n");
 
-        service.registerBooking("Single-1", "Single");
+        List<Bogie> bogies = new ArrayList<>();
+        bogies.add(new Bogie("Sleeper", 72));
+        bogies.add(new Bogie("AC Chair", 56));
+        bogies.add(new Bogie("First Class", 24));
+        bogies.add(new Bogie("Sleeper", 70));
 
-        service.cancelBooking("Single-1", hotelInventory);
-        service.showRollbackHistory();
+        System.out.println("Bogies in Train:");
+        for (Bogie b : bogies) {
+            System.out.println(b.name + " -> " + b.capacity);
+        }
 
-        System.out.println("\nUpdated Single Room Availability: " + hotelInventory.getAvailability("Single"));
+        int totalCapacity = bogies.stream()
+                .map(b -> b.capacity)
+                .reduce(0, Integer::sum);
+
+        System.out.println("\nTotal Seating Capacity of Train: " + totalCapacity);
+
+        System.out.println("\nUC10 aggregation completed...");
     }
 }
